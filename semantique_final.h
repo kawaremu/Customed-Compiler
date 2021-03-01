@@ -95,8 +95,8 @@ void afficherTableSymbole()
 {
     list curr;
     curr = head;
-    printf("\n/*****************    **************************************   ***************\n");
-    printf("/*****************    ========  TABLE DES SYMBOLES  ========    ***************/\n");
+    printf("\n/*****************    **************************************   ****************/\n");
+    printf("/*****************    ========  TABLE DES SYMBOLES  ========    ***************/   \n");
     printf("-------------------------------------------------------------------------------\n");
     printf("|  Nom entité  |   Code entité    |    Type entité     |    Taille entité      |\n");
     printf("-------------------------------------------------------------------------------\n");
@@ -176,12 +176,11 @@ bool depassementIndexTableau(char *entite, int index)
         {
             if (curr->element.tailleEntite < index)
                 return true; //La taille est dépassée
-            else
-                return false;
+            else return false; //Sinon
         }
         curr = curr->next;
     }
-    return false; //La taille n'est pas dépassée
+    return false;
 }
 
 /******************************************************************************/
@@ -249,8 +248,7 @@ char typeEntite(char *id)
 /***********     11- Fonction de bibliothèque nécessaire       ****************/
 /******************************************************************************/
 
-
-
+//La fonction est implémentée à l'intérieur de syntaxical.y
 
 
 
@@ -266,7 +264,7 @@ void resetPile()
     taille_pile = 0;
 }
 
-int veriferFormatage()
+int verifierFormatage()
 {
     return taille_pile;
 }
@@ -296,21 +294,5 @@ int desempiler(char element[])
     }
 }
 
-/******************************************************************************/
-/*********************     PARTIE DE TEST      ********************************/
-/******************************************************************************/
-// int main(int argc, char const *argv[])
-// {
-//     head = NULL;
-//     inserer("prix", "idf");
-//     inserer("$x", "idf");
-//     inserer("$y", "idf");
-//     inserer("$alpha", "idf");
 
-//     insererType("prix", "float");
-//     insererType("$x", "Entier");
-//     insererType("$y", "Entier");
-//     insererType("$alpha", "Chaine");
-//     afficherTableSymbole();
-//     return 0;
-// }
+//GOOD LUCK UwU

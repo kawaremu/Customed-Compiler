@@ -1,8 +1,3 @@
-
-
-/* Toutes les règles de grammaire */
-
-
 %{
 int error=0;
 int nb_ligne=0;
@@ -41,7 +36,7 @@ LISTE_BIB : BIB LISTE_BIB
 BIB: mc_import Nom_BIB pvg 
     
 ;	
-Nom_BIB:bib_io 
+Nom_BIB:bib_io {bib_declare = 1;}
        |bib_lang
 ;
 HEADER_CLASS: MODIFICATEUR mc_class idf 
@@ -57,15 +52,21 @@ Partie_ins: ins Partie_ins
 ;
 ins: affec | loop | input | output
 ;
-output: mc_out par_ouv out_exp par_frm pvg_inout 
+output: mc_out mc_out2 par_ouv out_exp par_frm pvg_inout 
 ;
-input: mc_in par_ouv in_exp par_frm pvg_inout 
+mc_out2 :  {if(!bib_declare) printf("Bibliothèque isil.io manquante pour l'éxecution du programme.\n");
+}
+;
+input: mc_in mc_in2 par_ouv in_exp par_frm pvg_inout 
+;
+mc_in2 :  {if(!bib_declare) printf("Bibliothèque isil.io manquante pour l'éxecution du programme.\n");
+}
 ;
 pvg_inout: pvg {//verification si des signes de formats non utilisés 
-                //if(VerifFormat()!=0) printf("Erreur format dans la fonction IN/OUT a la ligne: %d \n",nb_ligne); 
+                if(verifierFormatage()!=0) printf("Erreur format dans la fonction IN/OUT à la ligne: %d.\n",nb_ligne); 
                  error=1;}
 ;
-in_exp: quote param_form_in quote vrg IDFS // "";
+in_exp: quote param_form_in quote vrg IDFS 
 ;
 out_exp: quote param_form_out quote vrg IDFS 
 ;
@@ -89,9 +90,9 @@ signe_form: signe_d {   empiler('d'); }
 ;
 loop: mc_for par_ouv cond par_frm aco_ouv Partie_ins aco_frm
 ;
-cond: idf dpegal val pvg idf op_comp val pvg idf inc_dec { if(!estDeclare($5)) printf("Identificateur %s non declaré à la ligne %d.\n",$5,nb_ligne); return;
-                                                           if(!estDeclare($9)) printf("Identificateur %s non declaré à la ligne %d.\n",$9,nb_ligne); return;
-                                                           if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); return;}
+cond: idf dpegal val pvg idf op_comp val pvg idf inc_dec { if(!estDeclare($5)) printf("Identificateur %s non declaré à la ligne %d.\n",$5,nb_ligne); 
+                                                           if(!estDeclare($9)) printf("Identificateur %s non declaré à la ligne %d.\n",$9,nb_ligne);
+                                                           if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);}
 ;
 op_comp: egal | inf | sup | infegal | supegal | diff
 ;
@@ -101,7 +102,7 @@ affec: idf dpegal exp pvg { if(estConstante($1)) printf("Erreur : La constante %
                            if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); }
  | idf_Tab cr_ouv cst cr_frm dpegal exp pvg 
      { if(depassementIndexTableau($1,$3)) printf("Dépassement de taille du tableau %s à la ligne %d.\n",$1,nb_ligne);
-       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); }
+       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);}
 
 ;
 exp: quote chaine quote
@@ -127,21 +128,21 @@ Partie_DEC: Partie_DEC_VAR Partie_DEC
           | Partie_DEC_CONST Partie_DEC
           |
 ;
-Partie_DEC_CONST:   mc_const TYPE idf dpegal val pvg { if(!doubleDeclaration($3))
-                                     {insererType($3,sauvType); insererTaille($3,0);}
+Partie_DEC_CONST:   mc_const TYPE idf dpegal val pvg { if(!doubleDeclaration($3)) {insererType($3,sauvType); 
+                                                                                    insererTaille($3,0);}
 							    else
-								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
+								printf("Erreur sémantique: double déclaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
 								}
-                  | mc_const TYPE idf dpegal quote chaine quote pvg { if(doubleDeclaration($3)==0)
+                  | mc_const TYPE idf dpegal quote chaine quote pvg { if(!doubleDeclaration($3))
                                      {insererType($3,sauvType);
                                      insererTaille($3,0);}
 							    else
-								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
+								printf("Erreur sémantique: double déclaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
 								}
-                  | mc_const TYPE idf pvg { if(doubleDeclaration($3)==0)
+                  | mc_const TYPE idf pvg { if(!doubleDeclaration($3))
                                      {insererType($3,sauvType); insererTaille($3,0);}
 							    else
-								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
+								printf("Erreur sémantique: double déclaration de la variable %s à la ligne %d.\n",$3,nb_ligne);
 								}
 ;
 val: valeur 
@@ -153,13 +154,13 @@ val: valeur
 Partie_DEC_TAB: TYPE LISTE_IDF_TAB pvg
 ;
 LISTE_IDF_TAB: idf_Tab cr_ouv cst cr_frm vrg LISTE_IDF_TAB
-{ if(doubleDeclaration($1)==0)
+{ if(!doubleDeclaration($1))
                                     { insererType($1,sauvType); insererTaille($1,$3);}
 							    else
 								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$1,nb_ligne);
 								}
               | idf_Tab cr_ouv cst cr_frm
-{ if(doubleDeclaration($1)==0)
+{ if(!doubleDeclaration($1))
                                     { insererType($1,sauvType); insererTaille($1,$3);}
 							    else
 								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$1,nb_ligne);
@@ -173,7 +174,7 @@ LISTE_IDF: idf vrg LISTE_IDF { if(!doubleDeclaration($1))
 								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$1,nb_ligne);
 								}
 
-         | idf { if(doubleDeclaration($1)==0)
+         | idf { if(!doubleDeclaration($1))
                                      insererType($1,sauvType);
 							    else
 								printf("Erreur sémantique: double declaration de la variable %s à la ligne %d.\n",$1,nb_ligne);

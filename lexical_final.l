@@ -22,7 +22,7 @@ ch ({chiffres}|{lettres})*
 "d"  return signe_d;
 "s"  return signe_s;
 "f"  return signe_f;
-import {return mc_import;} 
+import return mc_import; 
 isil.io return bib_io;
 isil.lang return bib_lang;
 public return mc_public;
