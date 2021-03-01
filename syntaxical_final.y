@@ -101,7 +101,7 @@ affec: idf dpegal exp pvg { if(estConstante($1)) printf("Erreur : La constante %
                            if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); }
  | idf_Tab cr_ouv cst cr_frm dpegal exp pvg 
      { if(depassementIndexTableau($1,$3)) printf("Dépassement de taille du tableau %s à la ligne %d.\n",$1,nb_ligne);
-       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); }
+       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);}
 
 ;
 exp: quote chaine quote

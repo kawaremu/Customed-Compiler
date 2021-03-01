@@ -7,7 +7,7 @@ taire##
 
 ##comment##
 
-Entie $a1,$a2;
+Entier $a1,$a2;
 Entier $a3;
 Reel $t;
 Chaine $ch_1;
@@ -27,12 +27,13 @@ Entier @Tabl1[5];
 Entier @Tabl2[9];
 
           main() 
-          {
+          {   @Tabl2[87] := 0;
               $a1:=8-5;
               $b:="allo";
               @Tabl2[3]:=3-2;
               @Tabl1[4]:="test";
-              $a := 5,3; 
+              $a := 5,3;
+              @Tabl1[30] := 3-2; 
               For($i:=1;$i<2;$i++)
               {
                 $a1:=$r;
@@ -41,7 +42,8 @@ Entier @Tabl2[9];
                 $t:=$b/-3;
                 $a2:=$t*$a/$r-$b2+$t;
                 $b:=1,2/3,5*0,5-9,6+8,36;
-                @Tabl1[8]:=3-2;
+                @Tabl1[2] := 3-2;
+                @Tabl2[50] := 5;
                 In("%d %f ",$b,$t);
                 Out("test %d abcd  a %s ",$a1,$ch_1);
               }

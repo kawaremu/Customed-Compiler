@@ -176,12 +176,11 @@ bool depassementIndexTableau(char *entite, int index)
         {
             if (curr->element.tailleEntite < index)
                 return true; //La taille est dépassée
-            else
-                return false;
+            else return false; //Sinon
         }
         curr = curr->next;
     }
-    return false; //La taille n'est pas dépassée
+    return false;
 }
 
 /******************************************************************************/
