@@ -1,4 +1,4 @@
-import isil.io;
+ import isil.io;
 import isil.lang;
 private class $ISILA {
 

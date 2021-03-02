@@ -5,6 +5,7 @@ int nb_colonne=1;
 char sauvType[20];
 int bib2_declare = 0;
 int bib_declare = 0;
+int conflit=0;
 %}
 
 %union {
@@ -14,7 +15,7 @@ char car;
 float reel;
 }
 
-
+%nterm <str> idf_exp
 %nterm <entier> exp
 %nterm <str> idf_affec
 %nterm <str> idf_Tab_affec
@@ -101,48 +102,56 @@ op_comp: egal | inf | sup | infegal | supegal | diff
 inc_dec: plus plus | moins moins
 ;
 affec: idf_affec dpegal exp pvg { if(estConstante($1)) printf("Erreur : La constante %s à la ligne %d ne peut pas être modifiée.\n",$1,nb_ligne);
-                           if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); }
- | idf_Tab cr_ouv cst cr_frm dpegal exp pvg 
+                           if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); 
+                                    conflit=0;}
+ | idf_Tab_affec cr_ouv cst cr_frm dpegal exp pvg 
      { if(depassementIndexTableau($1,$3)) printf("Dépassement de taille du tableau %s à la ligne %d.\n",$1,nb_ligne);
-       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);}
+       if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne); 
+       conflit=0;}
 
 ;
 idf_affec: idf { addType($1);}
 ;
 idf_Tab_affec: idf_Tab { addType($1);}
 ;
-exp: quote chaine quote         { if(getVarType()!='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);}
+exp: quote chaine quote         { if((getVarType()!='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
                //operation + sur chaines permise , mais si le type de idf de l'affectation != string donc erreure
 
   | quote chaine quote operateur exp     
-                                      { if(getVarType()!='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);}
+                                      { if((getVarType()!='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
                //operation + sur chaines permise , mais si le type de idf de l'affectation != string donc erreure
 
-  | idf operateur exp { if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);
-                         if((getVarType()=='d')&&(typeEntite($1)!='d')) printf("Conflit de types a la ligne: %d \n",nb_ligne);
-                          if((getVarType()=='s')&&(typeEntite($1)!='s')) printf("Conflit de types a la ligne: %d \n",nb_ligne);}
+  | idf_exp operateur exp  
 
-  | idf { if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);
-         if((getVarType()=='d')&&(typeEntite($1)!='d')) printf("Conflit de types a la ligne: %d \n",nb_ligne);
-           if((getVarType()=='s')&&(typeEntite($1)!='s')) printf("Conflit de types a la ligne: %d \n",nb_ligne);}
-  | val operateur exp {if((getVarType()=='d')&&(getValType()!='d')) printf("Conflit de types a la ligne: %d \n",nb_ligne);
-                                 if(getVarType()=='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);}
+  | idf_exp  
+
+   
+  | val operateur exp {if((getVarType()=='d')&&(getValType()!='d')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                                 if((getVarType()=='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
 	
-  | val {if((getVarType()=='d')&&(getValType()!='d')) printf("Conflit de types a la ligne: %d \n",nb_ligne);
-                                   if(getVarType()=='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);}
+  | val {if((getVarType()=='d')&&(getValType()!='d')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                                   if((getVarType()=='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
 
-  | idf divi exp {if(getVarType()=='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);
-                  if($3==0) printf("Erreur sémantique:  DIVISION PAR ZERO à la ligne %d.\n",nb_ligne); 
-                  if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);
+  | idf_exp divi exp {if((getVarType()=='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                  if($3==0) printf("Erreur sémantique:  DIVISION PAR ZERO à la ligne %d.\n",nb_ligne);
                    if(getVarType()=='d') printf("La division est interdite sur un entier a la ligne: %d \n",nb_ligne);}
 
+
   | val divi exp {if($3==0) printf("Erreur sémantique:  DIVISION PAR ZERO à la ligne %d.\n",nb_ligne);	
-                  if(getVarType()=='s') printf("Conflit de types a la ligne: %d \n",nb_ligne);
-                  if(getVarType()=='d') printf("La division est interdite sur un entier a la ligne: %d \n",nb_ligne);}
+                  if((getVarType()=='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                  if((getVarType()=='d')&&(conflit==0) ) {printf("La division est interdite sur un entier a la ligne: %d \n",nb_ligne); conflit=1;}}
   
 									
   
 ;
+idf_exp:                           idf        { if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);
+                                                if((getVarType()=='d')&&(typeEntite($1)!='d')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                                                if((getVarType()=='s')&&(typeEntite($1)!='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
+
+               | idf_Tab cr_ouv cst cr_frm {   if(depassementIndexTableau($1,$3)) printf("Dépassement de taille du tableau %s à la ligne %d.\n",$1,nb_ligne);
+                                               if(!estDeclare($1)) printf("Identificateur %s non declaré à la ligne %d.\n",$1,nb_ligne);
+                                               if((getVarType()=='d')&&(typeEntite($1)!='d')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}
+                                               if((getVarType()=='s')&&(typeEntite($1)!='s')&&(conflit==0)) {printf("Conflit de types a la ligne: %d \n",nb_ligne); conflit=1;}}
 operateur: plus 
           | moins {if(getVarType()=='s') printf("Conflit de types, Operation - est interdite sur les chaines! a la ligne: %d \n",nb_ligne);}
           | mult {if(getVarType()=='s') printf("Conflit de types, Operation - est interdite sur les chaines! a la ligne: %d \n",nb_ligne);}
