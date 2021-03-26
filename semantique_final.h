@@ -30,6 +30,13 @@ int cpt_tab_symb = 0;
 char pile[25];
 int taille_pile = 0;
 int tete_pile = -1;
+
+                 //variable pour indiquer le type courant
+                   char vartype;
+                 //variable pour indiquer le type d'une valeur
+                   char valtype;
+                 //variable pour indiquer le type d'un idf dans une exp
+                   char idftype;
 /******************************************************************************/
 /****** Fonction qui crée un nouveau noeud avec le nom et code de l'entité*****/
 /******************************************************************************/
@@ -98,7 +105,7 @@ void afficherTableSymbole()
     printf("\n/*****************    **************************************   ****************/\n");
     printf("/*****************    ========  TABLE DES SYMBOLES  ========    ***************/   \n");
     printf("-------------------------------------------------------------------------------\n");
-    printf("|  Nom entité  |   Code entité    |    Type entité     |    Taille entité      |\n");
+    printf("|  Nom entite  |   Code entite    |    Type entite     |    Taille entite      |\n");
     printf("-------------------------------------------------------------------------------\n");
     while (curr != NULL)
     {
@@ -250,12 +257,39 @@ char typeEntite(char *id)
 
 //La fonction est implémentée à l'intérieur de syntaxical.y
 
+/******************************************************************************/
+/***********     12- Fonctions de compatibilité nécessaire       ****************/
+/******************************************************************************/
+// - Inserer type var courant
 
+    void addType(char id[]){
+         vartype=typeEntite(id);
+
+}
+
+// - Get type var courant
+
+    char getVarType() {
+        return vartype;
+}
+// - Inserer type valeur courante
+
+    void addvalType(char t){
+         valtype=t;
+       //t is d,f or s for int, float or string
+
+}
+
+// - Get type valeur courant
+
+    char getValType() {
+        return valtype;
+}
 
 
 
 /******************************************************************************/
-/***********     12- Fonction de formatage de chaîne E/S       ****************/
+/***********     13- Fonction de formatage de chaîne E/S       ****************/
 /******************************************************************************/
 
 void resetPile()
@@ -295,4 +329,6 @@ int desempiler(char element[])
 }
 
 
-//GOOD LUCK UwU
+ 
+//
+
