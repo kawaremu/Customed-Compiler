@@ -1,6 +1,7 @@
 %{
 #include "semantique_final.h"
 #include "syntaxical_final.tab.h"
+extern bib_lang_declare;
 extern nb_ligne;
 extern YYSTYPE yylval;
 %}
@@ -53,6 +54,7 @@ Out return mc_out;
 {valeur} { yylval.reel=atoi(yytext);
                      return valeur;
 		}
+"afficher" return mc_afficher;
 "=" return egal;
 "<" return inf;
 ">" return sup;
@@ -64,7 +66,7 @@ Out return mc_out;
 "-" return moins;
 "*" return mult;
 "/" return divi;
-":=" return dpegal;
+":=" { if(bib_lang_declare == 1) return dpegal; else {printf("Bibliothèque isil.lang manquante pour l'éxecution des affectations.\n"); return err;}}
 "[" return cr_ouv;
 "]" return cr_frm;
 "," return vrg;
@@ -80,4 +82,5 @@ Out return mc_out;
        return chaine;}
 . {printf("Erreur lexicale à la ligne %d avec l'entité %s.\n",nb_ligne,yytext);
 return err;}
+
 
