@@ -7,17 +7,17 @@ taire##
 
 ##comment##
 
-Entie $a1,$a2;
+Entier $a1,$a2;
 Entier $a3;
 Reel $t;
 Chaine $ch_1;
-Entier $b;
+Entier $b,$i;
 
 Const Chaine $chaine1:="s4l4m";
 Const Entier $r:=5;
-Const Entier $r:=5;
+ 
 Const Reel $b2;
-Const Reel $b2;
+ 
 Const Chaine $z_:="abcd";
 Const Entier $a_:=-2;
 Const Reel $za:=-15,14;
@@ -32,18 +32,19 @@ Entier @Tabl2[9];
               $b:="allo";
               @Tabl2[3]:=3-2;
               @Tabl1[4]:="test";
-              $a := 5,3; 
+              $a1 := 1-2; 
               For($i:=1;$i<2;$i++)
               {
                 $a1:=$r;
-                $a1:=$r/1;
+                $a1:=$a/2;
                 $a1:=8-0*8/3+8;
                 $t:=$b/-3;
                 $a2:=$t*$a/$r-$b2+$t;
                 $b:=1,2/3,5*0,5-9,6+8,36;
-                @Tabl1[8]:=3-2;
-                In("%d %f ",$b,$t);
-                Out("test %d abcd  a %s ",$a1,$ch_1);
+                @Tabl1[2]:=3-2;
+                In("%d %f " ,$b,$t);
+                 
+                Out("test %d abcd  a %s   ",$a1,$ch_1);
               }
           }
 }
